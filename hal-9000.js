@@ -8,7 +8,17 @@ var request = require("request");
 var keys = require("./keys.js");
 var spotify = require("spotify");
 var twitter = require("twitter");
-var command;
+var fs = require("fs");
+
+var defaultSpot;
+
+fs.readFile("random.txt", "utf8", function(error, data){
+	if(error){
+		console.log(error)
+	}else{
+		defaultSpot = data;	
+	}
+});
 
 var twitterClient = new twitter({
 	consumer_key: keys.twitterKeys.consumer_key,
@@ -42,8 +52,6 @@ function promptCommand(){
 	});
 }
 
-promptCommand();
-
 
 
 //twitter timeline stuff
@@ -51,22 +59,39 @@ promptCommand();
 
 
 function getTweets(){
-	twitterClient.get("statuses/user_timeline",function(error, tweets, response){
-		if(error){
-			console.log(error)
-		}else{
-			for(var i = 0; i < 3; i++)
-			console.log(tweets[i]);
-		}
-		promptCommand();
+	userInput.prompt({
+		type: "input",
+		message: "how many tweets would you like me to get?",
+		name: "tweetNum",
+		default: "20"
+	}).then(function(res){
+		let tweetNum = parseInt(res.tweetNum);
+		twitterClient.get("statuses/user_timeline",function(error, tweets, response){
+			if(error){
+				console.log(error)
+			}else{
+				textArray = [];
+				timeArray = [];
+				for(var i = 0; i < tweetNum; i++){
+					textArray[i] = tweets[i].text;
+					timeArray[i] = tweets[i].created_at;
+					console.log("On " + timeArray[i] + " you tweeted '" + textArray[i] + "'");
+					console.log("++++++++++++++++++++++++++++++++");
+				}
+			}
+			promptCommand();
+		});
 	});
+
+
 }
 
 function getSong(){
 	userInput.prompt({
 		type: "input",
 		message: "Enter a song: ",
-		name: "spot"
+		name: "spot",
+		default: defaultSpot
 	}).then(function(res){
 		spotify.search({
 			type: "track",
@@ -77,7 +102,24 @@ function getSong(){
 				return;
 			}else{
 				let object = data.tracks.items[0];
-				console.log(object);
+				let name = res.spot;
+				let artistArray = [];
+				for(var i = 0; i < object.artists.length; i++){
+					artistArray.push(object.artists[i].name);
+				}
+				let artists = artistArray.join(", ") + ".";
+				let album = object.album.name;
+				let preview = object.preview_url;
+				console.log("+++++++++++++++++++++++++++++++++++++++++");
+				console.log("+++ " + name + " +++");
+				console.log("+++++++++++++++++++++++++++++++++++++++++");
+				console.log("+++ Artist(s): " + artists + " +++");
+				console.log("+++ Album: " + album + " +++");
+				if(preview){
+					console.log("+++ Preview URL: " + preview + " +++");
+				}else{
+					console.log("+++++++ Preview Not Available ++++++++");
+				}
 			}
 			promptCommand();
 		});
@@ -88,7 +130,8 @@ function getMovie(){
 	userInput.prompt({
 		type: "input",
 		message: "enter a movie",
-		name: "movie"
+		name: "movie",
+		default: "Mr. Nobody"
 	}).then(function(res){
 		let movie = queryFormatter(res.movie.trim());
 		movieQuery = "http://www.omdbapi.com/?t=" + movie;
@@ -125,3 +168,5 @@ function queryFormatter(string){
 	}
 	return array.join("");
 }
+
+promptCommand();
