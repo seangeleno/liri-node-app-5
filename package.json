@@ -4,7 +4,9 @@
   "description": "Very intelligence. Much artificial. Wow!",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "mytweets": "node liri.js my-tweets",
+    "spotify": "node liri.js spotify-this-song madonna",
+    "imdb": "node liri.js movie-this free willy"
   },
   "repository": {
     "type": "git",
@@ -16,6 +18,7 @@
     "url": "https://github.com/MaxwellWibert/liri-node-app/issues"
   },
   "homepage": "https://github.com/MaxwellWibert/liri-node-app#readme",
+  "devDependencies": {},
   "dependencies": {
     "inquirer": "^3.0.6",
     "request": "^2.81.0",

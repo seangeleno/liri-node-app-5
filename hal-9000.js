@@ -2,7 +2,6 @@ console.log("+++++++++++++++++++++++++++");
 console.log("++ initializing scripts +++");
 console.log("+++++++++++++++++++++++++++");
 
-
 var userInput = require("inquirer");
 var request = require("request");
 var keys = require("./keys.js");
@@ -52,11 +51,7 @@ function promptCommand(){
 	});
 }
 
-
-
 //twitter timeline stuff
-
-
 
 function getTweets(){
 	userInput.prompt({
@@ -82,8 +77,6 @@ function getTweets(){
 			promptCommand();
 		});
 	});
-
-
 }
 
 function getSong(){
@@ -95,8 +88,8 @@ function getSong(){
 	}).then(function(res){
 		spotify.search({
 			type: "track",
-			query: res.spot,
-		}, function(err, data){
+			query: res.spot
+        }, function(err, data){
 			if(err){
 				console.log('Errors occured: ' + err);
 				return;
@@ -155,9 +148,6 @@ function getMovie(){
 		});
 	});
 }
-
-
-
 
 function queryFormatter(string){
 	let array = string.split("");
